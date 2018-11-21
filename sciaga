@@ -3,3 +3,26 @@ std::enable_if
 rekurencyjne strukty ?
 template <class T>
 using X = Y <T, 1>
+
+
+
+
+template ze zmienną liczbą argumentów
+
+(nie ma w czytankach) funkcje działające na arg z template’ów
+
+w dwóch pierwszych plikach potrzebne
+header <type_traits>
+std::enable_if
+
+w battle.h
+pozwolenie na własne stałe, nawet jeśli nie są wyspecyfikowane w treści
+rekurencyjne structy
+
+header guardy!!!
+
+chować wewnątrz klas, a nie w globalnej przestrzeni
+NIE ROBIĆ pustych namespace W HEADERZE
+
+template<classT>
+using X=Y<T, 1>;
