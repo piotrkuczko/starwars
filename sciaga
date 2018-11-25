@@ -3,6 +3,7 @@ std::enable_if
 rekurencyjne strukty ?
 template <class T>
 using X = Y <T, 1>
+https://hackernoon.com/a-tour-of-c-17-if-constexpr-3ea62f62ff65
 
 
 
