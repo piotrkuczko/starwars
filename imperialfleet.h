@@ -25,6 +25,8 @@ public:
     U getAttackPower() {
         return attackPower;
     }
+
+    virtual ~ImperialStarship() = default;
 };
 
 template <typename U> class DeathStar : public ImperialStarship<U> {

@@ -68,6 +68,8 @@ template <typename U> class XWing : public RebelStarship<U> {
     void check () {
         assert(299796 <= this->speed && this->speed <= 2997960);
     }
+
+public:
     XWing (U shield, U speed, U attackPower) {
         this->shield=shield;
         this->speed=speed;
