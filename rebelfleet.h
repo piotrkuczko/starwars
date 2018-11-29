@@ -3,21 +3,35 @@
 
 
 #include <cassert>
+#include <iostream>
+
+using type_to_speed = int;
 
 
-template <typename U> class RebelStarship {
-protected:
+template <typename U, bool notexplorer, type_to_speed min_value, type_to_speed max_value>
+class RebelStarship {
+private:
 
     U shield, speed, attackPower;
-    virtual void check() = 0;
-    explicit RebelStarship() {}
-    /*
-    TODO:
-     Klasy Explorer, StarCruiser i XWing mają publiczną składową valueType
-    reprezentującą typ U, którym zostały sparametryzowane.
-    */
 
 public:
+
+    explicit RebelStarship(U shield, U speed) {
+        this->shield = shield;
+        this->speed = speed;
+        assert(min_value <= speed && speed <= max_value);
+    }
+
+
+    explicit RebelStarship(U shield, U speed, U attackPower) {
+        this->shield = shield;
+        this->speed = speed;
+        this->attackPower = attackPower;
+        assert(min_value <= speed && speed <= max_value);
+    }
+
+    using valueType = U;
+
     U getShield() {
         return shield;
     }
@@ -30,52 +44,23 @@ public:
         else
             shield = 0;
     }
-    U getAttackPower() {
+
+
+    template<bool condition = notexplorer>
+    typename std::enable_if<condition, U>::type getAttackPower() {
         return attackPower;
     }
 };
 
-template <typename U> class Explorer : public RebelStarship<U> {
-private:
-    using RebelStarship<U>::getAttackPower;
-protected:
-    void check () {
-        assert(299796 <= this->speed && this->speed <= 2997960);
-    }
-public:
-    Explorer (U shield, U speed) {
-        this->shield=shield;
-        this->speed=speed;
-        check();
-    }
-};
 
-template <typename U> class StarCruiser : public RebelStarship<U> {
-    void check () {
-        assert (99999 <= this->speed && this->speed <= 299795);
-    }
+template <typename U>
+using Explorer = RebelStarship<U, false, 299796, 2997960>;
 
-public:
-    StarCruiser (U shield, U speed, U attackPower) {
-        this->shield=shield;
-        this->speed=speed;
-        this->attackPower=attackPower;
-        check();
-    }
-};
+template <typename U>
+using StarCruiser = RebelStarship<U, true, 99999, 299795>;
 
-template <typename U> class XWing : public RebelStarship<U> {
-    void check () {
-        assert(299796 <= this->speed && this->speed <= 2997960);
-    }
+template <typename U>
+using XWing = RebelStarship<U, true, 299796, 2997960>;
 
-public:
-    XWing (U shield, U speed, U attackPower) {
-        this->shield=shield;
-        this->speed=speed;
-        this->attackPower=attackPower;
-
-    }
-};
 
 #endif //PROJECT_REBELFLEET_H

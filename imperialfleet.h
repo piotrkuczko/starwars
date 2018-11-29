@@ -2,59 +2,56 @@
 #define PROJECT_IMPERIALFLEET_H
 
 
-template <typename U> class ImperialStarship {
-protected:
+
+
+template <typename U>
+class ImperialStarship {
+private:
+
     U shield, attackPower;
-    explicit ImperialStarship() {}
-    /*
-    TODO:
-     Klasy Explorer, StarCruiser i XWing mają publiczną składową valueType
-    reprezentującą typ U, którym zostały sparametryzowane.
-    */
 
 public:
+
+
+    explicit ImperialStarship(U shield, U attackPower) {
+        this->shield = shield;
+        this->attackPower = attackPower;
+    }
+
+    using valueType = U;
+
     U getShield() {
         return shield;
     }
+
     void takeDamage(U damage) {
         if (shield >= damage)
             shield -= damage;
         else
             shield = 0;
     }
+
     U getAttackPower() {
         return attackPower;
     }
 
-    virtual ~ImperialStarship() = default;
+    //~ImperialStarship() = default;
 };
 
-template <typename U> class DeathStar : public ImperialStarship<U> {
-public:
-    DeathStar (U shield, U attackPower) {
-        this->attackPower=attackPower;
-        this->shield=shield;
-    }
-};
+template <typename U>
+using DeathStar = ImperialStarship<U>;
+
+template <typename U>
+using ImperialDestroyer = ImperialStarship<U>;
+
+template <typename U>
+using TIEFighter = ImperialStarship<U>;
 
 
-template <typename U> class ImperialDestroyer : public ImperialStarship<U> {
-public:
-    ImperialDestroyer (U shield, U attackPower) {
-        this->attackPower=attackPower;
-        this->shield=shield;
-    }
-};
-
-template <typename U> class TIEFighter : public ImperialStarship<U> {
-public:
-    TIEFighter (U shield, U attackPower) {
-        this->attackPower=attackPower;
-        this->shield=shield;
-    }
-};
 
 template <typename I, typename R>
-void attack(I imperialShip, R rebelShip);
+void attack(I imperialShip, R rebelShip) {
+
+};
 
 #endif //PROJECT_IMPERIALFLEET_H
