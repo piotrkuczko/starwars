@@ -1,9 +1,6 @@
 #ifndef PROJECT_IMPERIALFLEET_H
 #define PROJECT_IMPERIALFLEET_H
 
-
-
-
 template <typename U>
 class ImperialStarship {
 private:
@@ -11,7 +8,6 @@ private:
     U shield, attackPower;
 
 public:
-
 
     explicit ImperialStarship(U shield, U attackPower) {
         this->shield = shield;
@@ -48,10 +44,16 @@ template <typename U>
 using TIEFighter = ImperialStarship<U>;
 
 
+template <typename A, typename B>
+void attack(ImperialStarship<A> &imperialShip, Explorer<B> &rebelShip) {
+    rebelShip.takeDamage(imperialShip.getAttackPower());
+}
 
-template <typename I, typename R>
-void attack(I imperialShip, R rebelShip) {
-
-};
+template <typename A, typename R>
+void attack(ImperialStarship<A> &imperialShip, R &rebelShip) {
+    //std::cout << typeid(R).name() << std::endl;
+    rebelShip.takeDamage(imperialShip.getAttackPower());
+    imperialShip.takeDamage(rebelShip.getAttackPower());
+}
 
 #endif //PROJECT_IMPERIALFLEET_H

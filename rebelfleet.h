@@ -45,11 +45,19 @@ public:
             shield = 0;
     }
 
+//    U getAttackPower() {
+//        if (!notexplorer) throw "explorer";
+//        return attackPower;
+//    }
+
+    /*template <bool checker = notexplorer, typename = typename std::enable_if<checker, U>::type>*/// U getAttackPower();
+
 
     template<bool condition = notexplorer>
     typename std::enable_if<condition, U>::type getAttackPower() {
         return attackPower;
     }
+
 };
 
 
