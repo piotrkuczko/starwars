@@ -44,13 +44,13 @@ template <typename U>
 using TIEFighter = ImperialStarship<U>;
 
 
-template <typename A, typename B>
-void attack(ImperialStarship<A> &imperialShip, Explorer<B> &rebelShip) {
+template <typename I, typename U>
+void attack(I &imperialShip, Explorer<U> &rebelShip) {
     rebelShip.takeDamage(imperialShip.getAttackPower());
 }
 
-template <typename A, typename R>
-void attack(ImperialStarship<A> &imperialShip, R &rebelShip) {
+template <typename I, typename R>
+void attack(I &imperialShip, R &rebelShip) {
     //std::cout << typeid(R).name() << std::endl;
     rebelShip.takeDamage(imperialShip.getAttackPower());
     imperialShip.takeDamage(rebelShip.getAttackPower());
