@@ -31,7 +31,9 @@ public:
         return attackPower;
     }
 
-    //~ImperialStarship() = default;
+    bool isRebel(){
+        return false;
+    }
 };
 
 template <typename U>

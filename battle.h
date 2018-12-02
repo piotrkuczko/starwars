@@ -3,58 +3,62 @@
 
 #include <iostream>
 #include <limits>
-#include <queue>
+#include <tuple>
 #include <cassert>
 #include <any>
 #include <cmath>
+#include <set>
+#include <vector>
 #include "rebelfleet.h"
 #include "imperialfleet.h"
 
 template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
 private:
-    std::vector<std::any> rebelShips;
-    std::vector<std::any> imperialShips;
+    std::vector<std::any> rebels;
+    std::vector<std::any> imperials;
+    size_t rebelsFleet;
+    size_t imperialsFleet;
     T currentTime;
-    std::vector<T> attacks;
+    std::set<T> attacks;
 
     constexpr void set_attack_time(){
-        size_t time = 1;
+        size_t time = 0;
         for(size_t i = t0; i <= t1; i++){
             time = sqrt(i);
             if(time*time == i){
-                attacks.emplace_back(i);
+                attacks.insert(i);
             }
         }
     }
 
-    template <template <class> class U, class Q>
-    void add_ships(U<Q> ship) {
-
-        if (dynamic_cast<RebelStarship<Q> *>(&ship))
-            rebelShips.push_back(ship);
-        else
-            imperialShips.push_back(ship);
+    template <typename Imp, typename Reb>
+    void imperial_attacks(Imp imperial, Reb rebel){
+/*
+        if(imperial.getShield()>0 && rebel.getShield()>0){
+            attack(imperial, rebel);
+        }
+        if(imperial.getShield() == 0)
+            imperialsFleet--;
+        if(rebel.getShield() == 0)
+            rebelsFleet--;
+ */
     }
 
-    template <template <class> class U, class Q, typename ... R>
-    void add_ships(U<Q> ship, R ... ships){
-        if (dynamic_cast<RebelStarship<Q> *>(&ship))
-            rebelShips.push_back(ship);
+    template <typename Q>
+    void add_ships(Q ship){
+        if(ship.isRebel())
+            rebels.push_back(ship);
         else
-            imperialShips.push_back(ship);
+            imperials.push_back(ship);
+    }
+
+    template <typename Q, typename ... R>
+    void add_ships(Q ship, R ... ships){
+        if(ship.isRebel())
+            rebels.push_back(ship);
+        else
+            imperials.push_back(ship);
         add_ships(ships...);
-    }
-
-    void rebel_attack(){
-        auto imperialIter = imperialShips.begin();
-        while (imperialIter != imperialShips.end()){
-            auto rebelIter = rebelShips.begin();
-            while (rebelIter != rebelShips.end()){
-                attack(*imperialIter, *rebelIter);
-                rebelIter++;
-            }
-            imperialIter++;
-        }
     }
 
     void battle_result(){
@@ -69,39 +73,43 @@ private:
     }
 
 public:
-    explicit SpaceBattle(S ... ships){
+    explicit SpaceBattle(S... ships) {
         static_assert(t0 <= std::numeric_limits<T>::max() &&
-                      t0 >= std::numeric_limits<T>::min(), "Starting time is not in range of given type");
+                      t0 >= 0, "Starting time is not in range of given type");
         static_assert(t1 <= std::numeric_limits<T>::max() &&
-                      t1 >= std::numeric_limits<T>::min(), "Ending time is not in range of given type");
+                      t1 >= 0, "Ending time is not in range of given type");
         static_assert(t0 <= t1, "Ending must take place after the start of battle");
 
         set_attack_time();
         currentTime = t0;
-
         add_ships(ships...);
+        rebelsFleet = rebels.size();
+        imperialsFleet = imperials.size();
 
     }
 
     size_t countImperialFleet(){
-        return imperialShips.size();
+        return imperialsFleet;
     }
 
     size_t countRebelFleet(){
-        return rebelShips.size();
+        return rebelsFleet;
     }
 
     void tick(T timestep){
-        if(countRebelFleet()>0 && countImperialFleet()>0){
-
-            auto iter = attacks.begin();
-            while (iter != attacks.end() && *iter < currentTime) iter++;
-            if(iter != attacks.end() && *iter == currentTime)
-                rebel_attack();
-            currentTime+=timestep;
-        } else {
-            battle_result();
+        if(attacks.find(currentTime) != attacks.end()) {
+            if (countRebelFleet()> 0 && countImperialFleet() > 0) {
+                for(auto Imperial : imperials){
+                    for(auto Rebel : rebels){
+                        imperial_attacks(Imperial, Rebel);
+                    }
+                }
+            } else {
+                battle_result();
+            }
         }
+        currentTime+=timestep;
+        if(currentTime > t1) currentTime = currentTime-t1;
     }
 };
 

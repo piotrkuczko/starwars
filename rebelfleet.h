@@ -58,6 +58,10 @@ public:
         return attackPower;
     }
 
+    bool isRebel(){
+        return true;
+    }
+
 };
 
 
