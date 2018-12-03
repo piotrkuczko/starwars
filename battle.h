@@ -12,6 +12,7 @@
 #include "imperialfleet.h"
 
 template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
+    //liczenie kwadratow czasu dziala na 99%
     static constexpr size_t countTimes(){
         size_t i = 1;
         while(i*i <= t1)
@@ -32,10 +33,11 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     std::array<T, countTimes()> attackTimes {set_attack_times()};
 
     std::tuple<S...> starShips;
-    size_t rebelsFleet;
-    size_t imperialsFleet;
+    size_t rebelsFleet; // liczba zyjacych statkow rebelii
+    size_t imperialsFleet; // liczba zyjacych statkow imperium
     T currentTime;
 
+    // zliczanie statkow rebelii na poczatku bitwy dziala na 99%
     template <typename Q>
     void countRebels(Q ship){
         if(ship.getShield() > 0) {
@@ -54,7 +56,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     }
 
 
-
+    //walka dziala na 0%
     void imperialsAttack(){
         /* dla każdego statku Imperium
   dla każdego statku Rebelii
@@ -65,6 +67,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
 
     }
 
+    // wypisywanie wynikow dziala na 60%
     void battle_result(){
         if(countImperialFleet() == 0){
             if(countRebelFleet() == 0)
@@ -100,6 +103,7 @@ public:
         return rebelsFleet;
     }
 
+    //brakuje imperialsAttack wiec nie dziala
     void tick(T timestep){
         if(std::find(attackTimes.begin(), attackTimes.end(), currentTime) != attackTimes.end()) {
             if (countRebelFleet() > 0 && countImperialFleet() > 0) {
@@ -108,6 +112,7 @@ public:
                 battle_result();
             }
         }
+        //tu nie jestem pewna co sie stanie jak timestep wykroczy poza limit T
         currentTime += timestep;
         if(currentTime > t1) currentTime = currentTime-t1;
     }
