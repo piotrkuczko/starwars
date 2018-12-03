@@ -33,6 +33,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     std::array<T, countTimes()> attackTimes {set_attack_times()};
 
     std::tuple<S...> starShips;
+    size_t allShips = 0;
     size_t rebelsFleet; // liczba zyjacych statkow rebelii
     size_t imperialsFleet; // liczba zyjacych statkow imperium
     T currentTime;
@@ -40,6 +41,8 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     // zliczanie statkow rebelii na poczatku bitwy dziala na 99%
     template <typename Q>
     void countRebels(Q ship){
+        //std::cout << "to pierwsze " << std::endl;
+        allShips++;
         if(ship.getShield() > 0) {
             if (ship.isRebel())
                 rebelsFleet++;
@@ -48,6 +51,8 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
 
     template <typename Q, typename ... R>
     void countRebels(Q ship, R... ships){
+        //std::cout << "to duze " << std::endl;
+        allShips++;
         if(ship.getShield() > 0) {
             if (ship.isRebel())
                 rebelsFleet++;
@@ -62,9 +67,14 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
   dla każdego statku Rebelii
     jeśli oba statki nie nie zostały jeszcze zniszczone,
       statek Imperium atakuje statek Rebelii. */
-
-
-
+        for (int i=0; i<allShips; i++) {
+            if (!std::get<i>(starShips).isRebel()) {
+                for (int j=0; j<allShips; j++) {
+                    if (std::get<j>(starShips).isRebel())
+                        attack(std::get<i>(starShips), std::get<j>(starShips));
+                }
+            }
+        }
     }
 
     // wypisywanie wynikow dziala na 60%

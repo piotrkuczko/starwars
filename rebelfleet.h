@@ -7,20 +7,58 @@
 
 using type_to_speed = int;
 
+template <typename U, bool explorer, type_to_speed min_value, type_to_speed max_value>
+class RebelStarship {};
 
-template <typename U, bool notexplorer, type_to_speed min_value, type_to_speed max_value>
-class RebelStarship {
+template <typename U>
+class RebelStarship <U, false, 299796, 2997960> {
 private:
 
-    U shield, speed, attackPower;
+    U shield, speed;
 
 public:
 
     explicit RebelStarship(U shield, U speed) {
         this->shield = shield;
         this->speed = speed;
-        assert(min_value <= speed && speed <= max_value);
+        assert(299796 <= speed && speed <= 2997960);
     }
+
+
+    using valueType = U;
+
+    U getShield() {
+        return shield;
+    }
+    U getSpeed() {
+        return speed;
+    }
+    void takeDamage(U damage) {
+        if (shield >= damage)
+            shield -= damage;
+        else
+            shield = 0;
+    }
+
+
+    bool isRebel(){
+        return true;
+    }
+
+    bool isExplorer() {
+        return true;
+    }
+
+};
+
+
+template <typename U, int min_value, int max_value>
+class RebelStarship <U, true, min_value, max_value>{
+private:
+
+    U shield, speed, attackPower;
+
+public:
 
 
     explicit RebelStarship(U shield, U speed, U attackPower) {
@@ -45,21 +83,16 @@ public:
             shield = 0;
     }
 
-//    U getAttackPower() {
-//        if (!notexplorer) throw "explorer";
-//        return attackPower;
-//    }
-
-    /*template <bool checker = notexplorer, typename = typename std::enable_if<checker, U>::type>*/// U getAttackPower();
-
-
-    template<bool condition = notexplorer>
-    typename std::enable_if<condition, U>::type getAttackPower() {
+    U getAttackPower() {
         return attackPower;
     }
 
     bool isRebel(){
         return true;
+    }
+
+    bool isExplorer() {
+        return false;
     }
 
 };
