@@ -9,3 +9,5 @@ set(CMAKE_CXX_STANDARD 17)
 
 #add_executable(main main.cpp imperialfleet.h rebelfleet.h battle.h)
 add_executable(example starwars_example.cc rebelfleet.h imperialfleet.h battle.h)
+add_executable(testAsercje TestSpeedAndTick.cpp rebelfleet.h imperialfleet.h battle.h)
+add_executable(testWypisywanie TestResultPrinting.cpp rebelfleet.h imperialfleet.h battle.h)

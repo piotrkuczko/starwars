@@ -62,11 +62,11 @@ void attack(I &imperialShip, U &rebelShip) {
 
 template <typename I, typename R>
 void attack(I &imperialShip, R &rebelShip) {
-    std::cout << typeid(R).name() << std::endl;
+//    std::cout << typeid(R).name() << std::endl;
     static_assert(!I::isRebel(), "First isn't imperialShip");
     static_assert(R::isRebel(), "Secont isn't rebelShip");
     rebelShip.takeDamage(imperialShip.getAttackPower());
-    std::cout << rebelShip.isExplorer() << std::endl;
+//    std::cout << rebelShip.isExplorer() << std::endl;
     if constexpr (!R::isExplorer())
         imperialShip.takeDamage(rebelShip.getAttackPower());
 }

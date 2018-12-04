@@ -53,7 +53,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
 
     // zliczanie statkow rebelii na poczatku bitwy dziala na 99%
     template <typename Q>
-    void countRebels(Q ship){
+    void countEachFraction(Q ship){
         //std::cout << "to pierwsze " << std::endl;
         allShips++;
         if (ship.isRebel()) {
@@ -66,7 +66,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     }
 
     template <typename Q, typename ... R>
-    void countRebels(Q ship, R... ships){
+    void countEachFraction(Q ship, R... ships){
         //std::cout << "to duze " << std::endl;
         allShips++;
         if (ship.isRebel()) {
@@ -76,7 +76,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
             if (ship.getShield() > 0)
                 imperialsFleet++;
         }
-        countRebels(ships...);
+        countEachFraction(ships...);
     }
     /*template <typename I, typename Q, typename ... R>
     void iterateAndAttack (I imper, Q ship, R... ships){
@@ -215,7 +215,7 @@ public:
         currentTime = t0;
         rebelsFleet = 0;
         imperialsFleet = 0;
-        countRebels(ships...);
+        countEachFraction(ships...);
         //zmienna = ships;
 
         //imperialsFleet = std::tuple_size<decltype(starShips)>::value - rebelsFleet;
@@ -232,16 +232,16 @@ public:
 
     //brakuje imperialsAttack wiec nie dziala
     void tick(T timestep){
-        if(std::find(attackTimes.begin(), attackTimes.end(), currentTime) != attackTimes.end()) {
-            if (countRebelFleet() > 0 && countImperialFleet() > 0) {
+        if(countRebelFleet() > 0 && countImperialFleet() > 0){
+            if(std::find(attackTimes.begin(), attackTimes.end(), currentTime) != attackTimes.end()) {
                 imperialsAttack();
-            } else {
-                battle_result();
             }
+        } else {
+            battle_result();
         }
         //tu nie jestem pewna co sie stanie jak timestep wykroczy poza limit T
         currentTime += timestep;
-        if(currentTime > t1) currentTime = currentTime-t1;
+        if(currentTime >= t1) currentTime = currentTime%t1;
     }
 
 };
