@@ -33,10 +33,16 @@ public:
         return attackPower;
     }
 
-    bool isRebel(){
+    static constexpr bool isRebel(){
         return false;
     }
 };
+//
+//ostream &operator << (ostream &os, ImperialStarship &a) {
+//    ostringstream ss;
+//    ss << a.getShield() << " " << a.getAttackPower() << "\n";
+//    return ss;
+//}
 
 template <typename U>
 using DeathStar = ImperialStarship<U>;
@@ -57,8 +63,8 @@ void attack(I &imperialShip, U &rebelShip) {
 template <typename I, typename R>
 void attack(I &imperialShip, R &rebelShip) {
     std::cout << typeid(R).name() << std::endl;
-    static_assert(!imperialShip.isRebel());
-    static_assert(rebelShip.isRebel());
+    static_assert(!imperialShip.isRebel(), "First isn't imperialShip");
+    static_assert(rebelShip.isRebel(), "Secont isn't rebelShip");
     rebelShip.takeDamage(imperialShip.getAttackPower());
     std::cout << rebelShip.isExplorer() << std::endl;
     if (!rebelShip.isExplorer())

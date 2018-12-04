@@ -5,11 +5,18 @@
 #include <limits>
 #include <tuple>
 #include <cassert>
+
 #include <cmath>
 #include <array>
+#include <vector>
 #include <algorithm>
 #include "rebelfleet.h"
 #include "imperialfleet.h"
+
+#include <functional>
+#include <iostream>
+#include <tuple>
+#include <type_traits>
 
 template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     //liczenie kwadratow czasu dziala na 99%
@@ -20,7 +27,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         return i;
     }
 
-    static constexpr std::array<T, countTimes()> set_attack_times(){
+    std::array<T, countTimes()> set_attack_times(){
         std::array<T, countTimes()> attackTimes;
         size_t index = 0;
         for(size_t i = 0; i*i<=t1; i++){
@@ -30,7 +37,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         return attackTimes;
     }
 
-    std::array<T, countTimes()> attackTimes {set_attack_times()};
+    std::array<T, countTimes()> attackTimes = set_attack_times();
 
     std::tuple<S...> starShips;
     size_t allShips = 0;
@@ -43,9 +50,12 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     void countRebels(Q ship){
         //std::cout << "to pierwsze " << std::endl;
         allShips++;
-        if(ship.getShield() > 0) {
-            if (ship.isRebel())
+        if (ship.isRebel()) {
+            if (ship.getShield() > 0)
                 rebelsFleet++;
+        } else {
+            if (ship.getShield() > 0)
+                imperialsFleet++;
         }
     }
 
@@ -53,28 +63,59 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
     void countRebels(Q ship, R... ships){
         //std::cout << "to duze " << std::endl;
         allShips++;
-        if(ship.getShield() > 0) {
-            if (ship.isRebel())
+        if (ship.isRebel()) {
+            if (ship.getShield() > 0)
                 rebelsFleet++;
+        } else {
+            if (ship.getShield() > 0)
+                imperialsFleet++;
         }
         countRebels(ships...);
     }
 
 
+    template <typename Q, typename Lam, typename beginType>
+    std::tuple<beginType> fold(Q ship, Lam&& lambda, beginType begin){
+        return lambda (ship, begin);
+    }
+
+    template <typename Q, typename ... R, typename Lam, typename beginType>
+    std::tuple<beginType> fold(Q ship, R... ships, Lam&& lambda, beginType begin){
+        return lambda (ship, fold(ships..., lambda), begin);
+    }
+
+    /*template <typename Q, typename I>
+    void funkcja2 (I imperial, Q ship) {
+        if (ship.isRebel()) {
+            attack(imperial, ship);
+        }
+    }
+
+    template <typename Q>
+    void funkcja1 (Q ship, void()) {
+        if (!ship.isRebel()) {
+            fold(starShips, funkcja2(), ship);
+        }
+    }*/
+
+
     //walka dziala na 0%
     void imperialsAttack(){
+        fold(starShips, funkcja1(), void());
         /* dla każdego statku Imperium
   dla każdego statku Rebelii
     jeśli oba statki nie nie zostały jeszcze zniszczone,
       statek Imperium atakuje statek Rebelii. */
-        for (int i=0; i<allShips; i++) {
-            if (!std::get<i>(starShips).isRebel()) {
-                for (int j=0; j<allShips; j++) {
-                    if (std::get<j>(starShips).isRebel())
-                        attack(std::get<i>(starShips), std::get<j>(starShips));
-                }
-            }
-        }
+//        fold(starShips, [](auto ship, auto result) -> {
+//            std::cout << ship.getShield();
+//            return {};
+//        }, {});
+        //
+            /*if (!ship.isRebel()) {
+
+            }*/
+        //});
+
     }
 
     // wypisywanie wynikow dziala na 60%

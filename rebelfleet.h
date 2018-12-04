@@ -41,7 +41,7 @@ public:
     }
 
 
-    bool isRebel(){
+    static constexpr bool isRebel(){
         return true;
     }
 
@@ -50,6 +50,13 @@ public:
     }
 
 };
+
+
+//ostream &operator << (ostream &os, RebelStarship &a) {
+//    ostringstream ss;
+//    ss << a.getShield() << " " << a.getSpeed << "\n";
+//    return ss;
+//}
 
 
 template <typename U, int min_value, int max_value>
@@ -87,7 +94,7 @@ public:
         return attackPower;
     }
 
-    bool isRebel(){
+    static constexpr bool isRebel(){
         return true;
     }
 
