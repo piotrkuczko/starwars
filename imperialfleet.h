@@ -1,5 +1,5 @@
-#ifndef PROJECT_IMPERIALFLEET_H
-#define PROJECT_IMPERIALFLEET_H
+#ifndef IMPERIALFLEET_H
+#define IMPERIALFLEET_H
 
 #include <typeinfo>
 
@@ -18,32 +18,33 @@ public:
 
     using valueType = U;
 
+    //getter for member shield
     U getShield() {
         return shield;
     }
 
+    //function which changes shield durability by damage value
     void takeDamage(U damage) {
         if (shield >= damage)
             shield -= damage;
         else
+            //if damage value is greater than remaining shield, shield durability changes to 0
             shield = 0;
     }
 
+    //getter for member attackPower
     U getAttackPower() {
         return attackPower;
     }
 
+    //function that return false, when ship does not belong to rebel's side
     static constexpr bool isRebel(){
         return false;
     }
 };
-//
-//ostream &operator << (ostream &os, ImperialStarship &a) {
-//    ostringstream ss;
-//    ss << a.getShield() << " " << a.getAttackPower() << "\n";
-//    return ss;
-//}
 
+
+//specializations of class RebelStarship
 template <typename U>
 using DeathStar = ImperialStarship<U>;
 
@@ -54,21 +55,16 @@ template <typename U>
 using TIEFighter = ImperialStarship<U>;
 
 
-/*template <typename I, template <class> class U>
-void attack(I &imperialShip, U &rebelShip) {
-    std::cout << typeid(rebelShip).name() << std::endl;
-    //rebelShip.takeDamage(imperialShip.getAttackPower());
-}*/
-
+//function that allows to carry out an attack by imperial's ship on rebel's ship
 template <typename I, typename R>
 void attack(I &imperialShip, R &rebelShip) {
-//    std::cout << typeid(R).name() << std::endl;
     static_assert(!I::isRebel(), "First isn't imperialShip");
     static_assert(R::isRebel(), "Secont isn't rebelShip");
     rebelShip.takeDamage(imperialShip.getAttackPower());
-//    std::cout << rebelShip.isExplorer() << std::endl;
+
+    //if rebel's ship is not an Explorer it fights back
     if constexpr (!R::isExplorer())
         imperialShip.takeDamage(rebelShip.getAttackPower());
 }
 
-#endif //PROJECT_IMPERIALFLEET_H
+#endif //IMPERIALFLEET_H

@@ -22,7 +22,7 @@ void battleDraw(){
     assert(battleWithDraw.countRebelFleet()==6);
     assert(battleWithDraw.countImperialFleet()==2);
 
-    battleWithDraw.tick(7); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
+    battleWithDraw.tick(9); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
 
     assert(battleWithDraw.countRebelFleet()==6);
     assert(battleWithDraw.countImperialFleet()==2);
@@ -37,7 +37,7 @@ void battleDraw(){
     assert(battleWithDraw.countRebelFleet()==1);
     assert(battleWithDraw.countImperialFleet()==1);
 
-    battleWithDraw.tick(2);
+    battleWithDraw.tick(2); // następuje atak, bo time = 4, i przechodzi na time = 6
 
     assert(battleWithDraw.countRebelFleet()==0);
     assert(battleWithDraw.countImperialFleet()==0);
@@ -65,7 +65,7 @@ void battleRebel(){
     assert(battleWithDraw.countRebelFleet()==6);
     assert(battleWithDraw.countImperialFleet()==2);
 
-    battleWithDraw.tick(7); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
+    battleWithDraw.tick(9); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
 
     assert(battleWithDraw.countRebelFleet()==6);
     assert(battleWithDraw.countImperialFleet()==2);
@@ -80,7 +80,7 @@ void battleRebel(){
     assert(battleWithDraw.countRebelFleet()==1);
     assert(battleWithDraw.countImperialFleet()==1);
 
-    battleWithDraw.tick(2);
+    battleWithDraw.tick(2); // następuje atak, bo time = 4, i przechodzi na time = 6
 
     assert(battleWithDraw.countRebelFleet()==1);
     assert(battleWithDraw.countImperialFleet()==0);

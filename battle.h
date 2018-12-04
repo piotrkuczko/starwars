@@ -1,29 +1,30 @@
-#ifndef PROJECT_BATTLE_H
-#define PROJECT_BATTLE_H
+#ifndef BATTLE_H
+#define BATTLE_H
 
 #include <iostream>
 #include <limits>
 #include <tuple>
-#include <cassert>
 
-#include <cmath>
 #include <array>
-#include <vector>
 #include <algorithm>
 #include "rebelfleet.h"
 #include "imperialfleet.h"
 
 #include <functional>
-#include <iostream>
-#include <tuple>
 #include <type_traits>
 
-using namespace std;
 
+template <typename T, T t0, T t1, typename ... S>
+class SpaceBattle {
+private:
 
+    static_assert(t0 <= std::numeric_limits<T>::max() &&
+                  t0 >= 0, "Starting time is not in range of given type");
+    static_assert(t1 <= std::numeric_limits<T>::max() &&
+                  t1 >= 0, "Ending time is not in range of given type");
+    static_assert(t0 <= t1, "Ending must take place after the start of battle");
 
-template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
-    //liczenie kwadratow czasu dziala na 99%
+    //function used for making collection of times when attacks can occur
     static constexpr size_t countTimes(){
         size_t i = 1;
         while(i*i <= t1)
@@ -31,8 +32,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         return i;
     }
 
-    //auto zmienna;
-
+    //function used for making collection of times when attacks can occur
     std::array<T, countTimes()> set_attack_times(){
         std::array<T, countTimes()> attackTimes;
         size_t index = 0;
@@ -43,18 +43,26 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         return attackTimes;
     }
 
+    //collection of times when attacks can occur
     std::array<T, countTimes()> attackTimes = set_attack_times();
 
+    //tuple with all ships, that take part in battle
     std::tuple<S...> starShips;
+
+    //number of all ships, that take part in battle
     size_t allShips = 0;
-    size_t rebelsFleet; // liczba zyjacych statkow rebelii
-    size_t imperialsFleet; // liczba zyjacych statkow imperium
+
+    //numbers of ships of each fraction, that take part in battle
+    size_t rebelsFleet;
+    size_t imperialsFleet;
+
+    //current time in counted in interstellar time
     T currentTime;
 
-    // zliczanie statkow rebelii na poczatku bitwy dziala na 99%
+
+    //function that counts ships of each fraction
     template <typename Q>
     void countEachFraction(Q ship){
-        //std::cout << "to pierwsze " << std::endl;
         allShips++;
         if (ship.isRebel()) {
             if (ship.getShield() > 0)
@@ -65,6 +73,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         }
     }
 
+    //function that counts ships of each fraction
     template <typename Q, typename ... R>
     void countEachFraction(Q ship, R... ships){
         //std::cout << "to duze " << std::endl;
@@ -78,173 +87,109 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         }
         countEachFraction(ships...);
     }
-    /*template <typename I, typename Q, typename ... R>
-    void iterateAndAttack (I imper, Q ship, R... ships){
-        if (ship.isRebel())
-            attack(imper, ship);
-        iterateAndAttack(imper, ships);
-    };
-    template <typename I, typename Q>
-    void iterateAndAttack (I imper, Q ship){
-        if (ship.isRebel())
-            attack(imper, ship);
-    };*/
-    /*template <typename Q>
-    void iterateByImper(Q shiclang -wall -Wextra -std=c++17 -O2 -ls
-p){
-        if (!ship.isRebel())
-            //iterateAndAttack(ship, starShips);
-            std::cout << "atakuj single" << std::endl;
-    };
 
-    template <typename Q, typename ... R>
-    void iterateByImper(Q ship, R... ships){
-        if (!ship.isRebel())
-            std::cout << "atakuj" << std::endl;
-            //iterateAndAttack(ship, starShips);
-        iterateByImper(ships...);
-    };*/
-
-
-
-    /*template <typename Q, typename Lam, typename beginType>
-    std::tuple<beginType> fold(Q ship, Lam&& lambda, beginType begin){
-        return lambda (ship, begin);
-    }
-
-    template <typename Q, typename ... R, typename Lam, typename beginType>
-    std::tuple<beginType> fold(Q ship, R... ships, Lam&& lambda, beginType begin){
-        return lambda (ship, fold(ships..., lambda), begin);
-    }*/
-
-    /*template <typename Q, typename I>
-    void funkcja2 (I imperial, Q ship) {
-        if (ship.isRebel()) {
-            attack(imperial, ship);
-        }
-    }
-
-    template <typename Q>
-    void funkcja1 (Q ship, void()) {
-        if (!ship.isRebel()) {
-            fold(starShips, funkcja2(), ship);
-        }
-    }*/
-
-    /*void atatc<0> () {
-        if (get<0>(starShips).isRebel()) {
-            cout << "is Rebel" << endl;
-        }
-    }
-
-    template <typename a>
-    void atatc<a>()  {
-        if (get<0>(starShips).isRebel()) {
-            cout << "is Rebel" << endl;
-        }
-        atatc<a-1>();
-    }*/
-
+    //function that allows imperialShip to carry out an attack on rebel's ships
     template <typename U, size_t numElem = 0>
-    void rebeliantAttack(ImperialStarship<U> &imperialShip) {
+    void imperialAttacks(ImperialStarship<U> &imperialShip) {
 
-    std::tuple_element_t<numElem, decltype(starShips)> &rebelShip = std::get<numElem>(starShips);
+        std::tuple_element_t<numElem, decltype(starShips)> &rebelShip = std::get<numElem>(starShips);
 
-    if constexpr (std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
-        if (imperialShip.getShield() > 0 && rebelShip.getShield() > 0) {
-            attack(imperialShip, rebelShip);
+        if constexpr (std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
+            if (imperialShip.getShield() > 0 && rebelShip.getShield() > 0) {
+                attack(imperialShip, rebelShip);
 
-            if (imperialShip.getShield() == 0)
-            imperialsFleet--;
+                if (imperialShip.getShield() == 0)
+                    //if after attack imperialShis's shield go down to 0,
+                    //then number of undestroyed imperial's ships is decreased by 1
+                    imperialsFleet--;
 
-            if (rebelShip.getShield() == 0)
-            rebelsFleet--;
-        }
-    }
-
-    const size_t newIndex = numElem+1;
-
-    if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value)
-        rebeliantAttack<U, newIndex>(imperialShip);
-}
-
-
-    //walka dziala na 0%
-    template <size_t numElem = 0>
-    void imperialsAttack(){
-        std::tuple_element_t<numElem, decltype(starShips)> &imperialShip = std::get<numElem>(starShips);
-        if constexpr (!std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
-            if (imperialShip.getShield() > 0) {
-                rebeliantAttack(imperialShip);
+                if (rebelShip.getShield() == 0)
+                    //if after attack rebelShis's shield go down to 0,
+                    //then number of undestroyed rebel's ships is decreased by 1
+                    rebelsFleet--;
             }
         }
 
-    const size_t newIndex = numElem+1;
+        const size_t newIndex = numElem+1;
 
-    if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value) {
-        imperialsAttack<newIndex>();
+        if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value)
+            imperialAttacks<U, newIndex>(imperialShip);
     }
 
-        /* dla każdego statku Imperium
-  dla każdego statku Rebelii
-    jeśli oba statki nie nie zostały jeszcze zniszczone,
-      statek Imperium atakuje statek Rebelii. */
 
+    //function that for every imperial's ship, that is not destroyed, invokes function imperialAttacks
+    template <size_t numElem = 0>
+    void battle(){
+        std::tuple_element_t<numElem, decltype(starShips)> &imperialShip = std::get<numElem>(starShips);
+        if constexpr (!std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
+            if (imperialShip.getShield() > 0) {
+                imperialAttacks(imperialShip);
+            }
+        }
+
+        const size_t newIndex = numElem+1;
+
+        if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value) {
+            battle<newIndex>();
+        }
     }
 
-    // wypisywanie wynikow dziala na 60%
+    //function that prints battle result depending on the number of undestroyed ships of each fraction
     void battle_result(){
         if(countImperialFleet() == 0){
             if(countRebelFleet() == 0)
+                //if each fraction is destroyed function prints "DRAW\n"
                 std::cout << "DRAW\n";
             else
+                //if only imperials are destroyed function prints "REBELLION WON\n"
                 std::cout << "REBELLION WON\n";
         } else {
+            //if only rebels are destroyed function prints "IMPERIUM WON\n"
             std::cout << "IMPERIUM WON\n";
         }
     }
 
 public:
-    explicit SpaceBattle(S... ships) : starShips(std::tuple<S...>(ships...)) {
-        static_assert(t0 <= std::numeric_limits<T>::max() &&
-                      t0 >= 0, "Starting time is not in range of given type");
-        static_assert(t1 <= std::numeric_limits<T>::max() &&
-                      t1 >= 0, "Ending time is not in range of given type");
-        static_assert(t0 <= t1, "Ending must take place after the start of battle");
 
+    explicit SpaceBattle(S... ships) : starShips(std::tuple<S...>(ships...)) {
+        //setting current time to t0
         currentTime = t0;
+
+        //setting rebels and imperials number of ships to appropriate values
         rebelsFleet = 0;
         imperialsFleet = 0;
         countEachFraction(ships...);
-        //zmienna = ships;
-
-        //imperialsFleet = std::tuple_size<decltype(starShips)>::value - rebelsFleet;
-
     }
 
+    //getter for number of undestroyed imperial's ship
     size_t countImperialFleet(){
         return imperialsFleet;
     }
 
+    //getter for number of undestroyed rebel's ship
     size_t countRebelFleet(){
         return rebelsFleet;
     }
 
-    //brakuje imperialsAttack wiec nie dziala
+    //function that simulate moment in fight
     void tick(T timestep){
         if(countRebelFleet() > 0 && countImperialFleet() > 0){
+            //if there are 1 or more ship of each fraction undestroyed...
             if(std::find(attackTimes.begin(), attackTimes.end(), currentTime) != attackTimes.end()) {
-                imperialsAttack();
+                //... and it is time when attack can occur, then function battle is invoked
+                battle();
             }
         } else {
+            //if there is 0 ships of any of fractions, then battle is ended, and function battle_result is invoked
             battle_result();
         }
-        //tu nie jestem pewna co sie stanie jak timestep wykroczy poza limit T
+
+        //after the battle time is changed by timestep, and if it goes beyond t1,
+        //then it loops and start counting from 0
         currentTime += timestep;
-        if(currentTime >= t1) currentTime = currentTime%t1;
+        if(currentTime > t1) currentTime = currentTime%(t1 + 1);
     }
 
 };
 
-#endif //PROJECT_BATTLE_H
-//clang -Wall -Wextra -std=c++17 -O2 -lstdc++ starwars_example.cc -o starwars
+#endif //BATTLE_H

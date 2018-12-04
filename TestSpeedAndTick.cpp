@@ -32,7 +32,7 @@ int main() {
     assert(battle.countRebelFleet()==5);
     assert(battle.countImperialFleet()==1);
 
-    battle.tick(7); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
+    battle.tick(9); //czas dochodzi do 6 i przeskakuje na 0, znow dochodzi do 6 i przeskakuje na 0;
 
     assert(battle.countRebelFleet()==5);
     assert(battle.countImperialFleet()==1);
