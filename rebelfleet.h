@@ -45,7 +45,7 @@ public:
         return true;
     }
 
-    bool isExplorer() {
+    static constexpr bool isExplorer() {
         return true;
     }
 
@@ -98,7 +98,7 @@ public:
         return true;
     }
 
-    bool isExplorer() {
+    static constexpr bool isExplorer() {
         return false;
     }
 

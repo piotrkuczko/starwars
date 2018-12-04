@@ -89,8 +89,9 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         if (ship.isRebel())
             attack(imper, ship);
     };*/
-    template <typename Q>
-    void iterateByImper(Q ship){
+    /*template <typename Q>
+    void iterateByImper(Q shiclang -wall -Wextra -std=c++17 -O2 -ls
+p){
         if (!ship.isRebel())
             //iterateAndAttack(ship, starShips);
             std::cout << "atakuj single" << std::endl;
@@ -102,7 +103,7 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
             std::cout << "atakuj" << std::endl;
             //iterateAndAttack(ship, starShips);
         iterateByImper(ships...);
-    };
+    };*/
 
 
 
@@ -144,28 +145,45 @@ template <typename T, T t0, T t1, typename ... S> class SpaceBattle {
         atatc<a-1>();
     }*/
 
+    template <typename U, size_t numElem = 0>
+    void rebeliantAttack(ImperialStarship<U> &imperialShip) {
 
+    std::tuple_element_t<numElem, decltype(starShips)> &rebelShip = std::get<numElem>(starShips);
+
+    if constexpr (std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
+        if (imperialShip.getShield() > 0 && rebelShip.getShield() > 0) {
+            attack(imperialShip, rebelShip);
+
+            if (imperialShip.getShield() == 0)
+            imperialsFleet--;
+
+            if (rebelShip.getShield() == 0)
+            rebelsFleet--;
+        }
+    }
+
+    const size_t newIndex = numElem+1;
+
+    if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value)
+        rebeliantAttack<U, newIndex>(imperialShip);
+}
 
 
     //walka dziala na 0%
+    template <size_t numElem = 0>
     void imperialsAttack(){
-        if constexpr (1==2) {
-            cout << "2";
-        }
-        /*template <typename Tt, Tt t0t, Tt t1t, typename ... St> class Wykonaj {
-        public:
-            Wykonaj(St... ships) {
-                iterateByImper(ships...);
+        std::tuple_element_t<numElem, decltype(starShips)> &imperialShip = std::get<numElem>(starShips);
+        if constexpr (!std::tuple_element_t<numElem, decltype(starShips)>::isRebel()) {
+            if (imperialShip.getShield() > 0) {
+                rebeliantAttack(imperialShip);
             }
-        };
+        }
 
-        Wykonaj a = Wykonaj(starShips);*/
+    const size_t newIndex = numElem+1;
 
-        /*for (int i=0; i<allShips; i++) {
-            if (get<starShips+i>(starShips).isRebel())
-                cout << "is Rebel" << endl;
-            else cout << "notRebel" << endl;
-        }*/
+    if constexpr (newIndex < std::tuple_size<decltype(starShips)>::value) {
+        imperialsAttack<newIndex>();
+    }
 
         /* dla każdego statku Imperium
   dla każdego statku Rebelii
@@ -196,10 +214,11 @@ public:
 
         currentTime = t0;
         rebelsFleet = 0;
+        imperialsFleet = 0;
         countRebels(ships...);
         //zmienna = ships;
-        imperialsFleet = 0;
-        imperialsFleet = std::tuple_size<decltype(starShips)>::value - rebelsFleet;
+
+        //imperialsFleet = std::tuple_size<decltype(starShips)>::value - rebelsFleet;
 
     }
 
@@ -224,6 +243,8 @@ public:
         currentTime += timestep;
         if(currentTime > t1) currentTime = currentTime-t1;
     }
+
 };
 
 #endif //PROJECT_BATTLE_H
+//clang -Wall -Wextra -std=c++17 -O2 -lstdc++ starwars_example.cc -o starwars
